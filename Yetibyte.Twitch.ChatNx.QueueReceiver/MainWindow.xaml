@@ -1,0 +1,169 @@
+﻿<Window x:Class="Yetibyte.Twitch.ChatNx.QueueReceiver.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Yetibyte.Twitch.ChatNx.QueueReceiver"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:conv="clr-namespace:Yetibyte.Twitch.ChatNx.QueueReceiver.Converters"
+        xmlns:ToggleSwitch="clr-namespace:ToggleSwitch;assembly=ToggleSwitch"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
+        xmlns:wpfspark="clr-namespace:WPFSpark;assembly=WPFSpark"
+        mc:Ignorable="d"
+        
+        Title="ChatNx: Command Queue" Height="400" Width="800" Background="{Binding Path=Options.BackgroundColor}">
+    <Window.Resources>
+        <ResourceDictionary>
+            <conv:SolidColorBrushToColorConverter x:Key="BrushColorConverter" />
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="38" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="450" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="42" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center" Padding="4,4" FontWeight="SemiBold" Text="Command Queue" 
+                                   Foreground="{Binding Path=Options.HeaderTextColor}" FontSize="{Binding Path=Options.HeaderTextSize}" />
+                        <TextBlock VerticalAlignment="Center" Padding="0,4" FontWeight="SemiBold" Text="{Binding Path=QueueItemCount, StringFormat='({0})'}" 
+                                   Foreground="{Binding Path=Options.HeaderTextColor}" FontSize="{Binding Path=Options.HeaderTextSize}" />
+                    </StackPanel>
+                    <ScrollViewer x:Name="scrollQueue" Grid.Row="1" VerticalScrollBarVisibility="Hidden"  HorizontalScrollBarVisibility="Hidden" ScrollChanged="scrollQueue_ScrollChanged" MouseEnter="scrollQueue_MouseEnter" MouseLeave="scrollQueue_MouseLeave">
+                        <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
+                            <ItemsControl ItemsSource="{Binding Path=CommandQueueItems}" HorizontalAlignment="Stretch">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel HorizontalAlignment="Stretch" Orientation="Horizontal">
+                                            <TextBlock HorizontalAlignment="Stretch"  Margin="4,2" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Aliased"  
+                                                       Foreground="{Binding Path=DataContext.Options.QueueItemTextColor, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                                       Text="{Binding Path=TimeStamp, StringFormat='hh:mm:ss tt'}" VerticalAlignment="Center" FontFamily="Arial Rounded MT Bold" 
+                                                       FontSize="{Binding Path=DataContext.Options.QueueItemTimeStampTextSize, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
+                                            <TextBlock HorizontalAlignment="Stretch"  Margin="4,2" TextOptions.TextFormattingMode="Display"  TextOptions.TextRenderingMode="Aliased" 
+                                                       Text="{Binding Path=Data.UserName}" VerticalAlignment="Center" Foreground="{Binding Path=Data.UserColorHex}" FontFamily="Arial Rounded MT Bold" 
+                                                       FontSize="{Binding Path=DataContext.Options.QueueItemTextSize, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
+                                            <TextBlock HorizontalAlignment="Stretch"  Margin="4,2" TextOptions.TextFormattingMode="Display"  TextOptions.TextRenderingMode="Aliased" 
+                                                       Foreground="{Binding Path=DataContext.Options.QueueItemTextColor, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                                       Text="{Binding Path=Data.Command}" VerticalAlignment="Center" FontWeight="Bold" FontFamily="Arial Rounded MT Bold" 
+                                                       FontSize="{Binding Path=DataContext.Options.QueueItemTextSize, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"  />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ScrollViewer>
+                    <Border Grid.Row="2" BorderThickness="2" BorderBrush="{Binding Path=Options.CurrentItemBorderColor}" Margin="4,4,8,4">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="40" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" x:Name="stackCurrentItem" HorizontalAlignment="Stretch" Orientation="Horizontal">
+                                <TextBlock HorizontalAlignment="Stretch"  Margin="4,2" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Aliased"  Foreground="{Binding Path=Options.QueueItemTextColor}"
+                                               Text="{Binding Path=CurrentItem.TimeStamp, StringFormat='hh:mm:ss tt'}" VerticalAlignment="Center" FontFamily="Arial Rounded MT Bold" FontSize="{Binding Path=Options.QueueItemTimeStampTextSize}" />
+                                <TextBlock HorizontalAlignment="Stretch"  Margin="4,2" TextOptions.TextFormattingMode="Display"  TextOptions.TextRenderingMode="Aliased" 
+                                               Text="{Binding Path=CurrentItem.Data.UserName}" VerticalAlignment="Center" Foreground="{Binding Path=CurrentItem.Data.UserColorHex}" FontFamily="Arial Rounded MT Bold" FontSize="{Binding Path=Options.QueueItemTextSize}" />
+                                <TextBlock HorizontalAlignment="Stretch"  Margin="4,2" TextOptions.TextFormattingMode="Display"  TextOptions.TextRenderingMode="Aliased" 
+                                               Foreground="{Binding Path=Options.QueueItemTextColor}"
+                                               Text="{Binding Path=CurrentItem.Data.Command}" VerticalAlignment="Center" FontWeight="Bold" FontFamily="Arial Rounded MT Bold" FontSize="{Binding Path=Options.QueueItemTextSize}"  />
+                            </StackPanel>
+                            <wpfspark:SprocketControl                                     
+                                    Grid.Column="1" 
+                                    Width="32" 
+                                    Height="32" 
+                                    TickColor="{Binding Path=Options.QueueItemTextColor, Converter={StaticResource BrushColorConverter}}">
+                                <wpfspark:SprocketControl.Style>
+                                    <Style TargetType="wpfspark:SprocketControl">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=CurrentItem.IsCompleted}" Value="True">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Path=CurrentItem.IsCompleted}" Value="False">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </wpfspark:SprocketControl.Style>
+                            </wpfspark:SprocketControl>
+
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+            <GridSplitter Grid.Column="0" Background="{Binding Path=Options.DividerColor}" ResizeBehavior="CurrentAndNext" Width="3" VerticalAlignment="Stretch" ResizeDirection="Auto" />
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" Padding="4,4" FontWeight="SemiBold" Text="Command History" 
+                               Foreground="{Binding Path=Options.HeaderTextColor}" FontSize="{Binding Path=Options.HeaderTextSize}" />
+                    <TextBlock VerticalAlignment="Center" Padding="0,4" FontWeight="SemiBold" Text="{Binding Path=HistoryItemCount, StringFormat='({0})'}" 
+                                   Foreground="{Binding Path=Options.HeaderTextColor}" FontSize="{Binding Path=Options.HeaderTextSize}" />
+                </StackPanel>
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled" ScrollChanged="ScrollViewer_ScrollChanged" 
+                              MouseEnter="ScrollViewer_MouseEnter" MouseLeave="ScrollViewer_MouseLeave">
+                    <StackPanel x:Name="stackHistory" Orientation="Vertical" VerticalAlignment="Bottom">
+                        <ItemsControl ItemsSource="{Binding Path=HistoryItems}" HorizontalAlignment="Stretch">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel HorizontalAlignment="Stretch" Orientation="Horizontal">
+                                        <TextBlock  HorizontalAlignment="Stretch"  Margin="4,2" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Aliased"  
+                                                    Foreground="{Binding Path=DataContext.Options.HistoryItemTextColor, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                           Text="{Binding Path=TimeStamp, StringFormat='hh:mm:ss tt'}" VerticalAlignment="Center" FontFamily="Arial Rounded MT Bold" 
+                                                    FontSize="{Binding Path=DataContext.Options.HistoryItemTimeStampTextSize, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
+                                        <TextBlock HorizontalAlignment="Stretch"  Margin="4,2" TextOptions.TextFormattingMode="Display"  TextOptions.TextRenderingMode="Aliased" 
+                                           Text="{Binding Path=Data.UserName}" VerticalAlignment="Center" Foreground="{Binding Path=Data.UserColorHex}" FontFamily="Arial Rounded MT Bold" 
+                                                   FontSize="{Binding Path=DataContext.Options.HistoryItemTextSize, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
+                                        <TextBlock HorizontalAlignment="Stretch"  Margin="4,2" TextOptions.TextFormattingMode="Display"  TextOptions.TextRenderingMode="Aliased" 
+                                           Foreground="{Binding Path=DataContext.Options.HistoryItemTextColor, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                           Text="{Binding Path=Data.Command}" VerticalAlignment="Center" FontWeight="Bold" FontFamily="Arial Rounded MT Bold" 
+                                                   FontSize="{Binding Path=DataContext.Options.HistoryItemTextSize, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"  />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+        
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <ToggleSwitch:HorizontalToggleSwitch Grid.Row="1" HorizontalAlignment="Left" Margin="8,2">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Checked" >
+                        <i:InvokeCommandAction Command="{Binding Path=StartCommand}" />
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="Unchecked" >
+                        <i:InvokeCommandAction Command="{Binding Path=StopCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ToggleSwitch:HorizontalToggleSwitch>
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch">
+                <Expander ExpandDirection="Right" VerticalContentAlignment="Center" VerticalAlignment="Center" Margin="8,0,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Command="{Binding Path=ClearCommand}" Width="80" Margin="10,2,2,2">Clear All</Button>
+                        <Button Command="{Binding Path=ClearCommand}" CommandParameter="QUEUE" Width="80" Margin="2,2,2,2">Clear Queue</Button>
+                        <Button Command="{Binding Path=ClearCommand}" CommandParameter="HISTORY" Width="80" Margin="2,2,2,2">Clear History</Button>
+                        <Button x:Name="btnOptions" Margin="6,2,2,2" Width="80" Click="btnOptions_Click">Options</Button>
+                    </StackPanel>
+                </Expander>
+            </StackPanel>
+            
+        </StackPanel>
+
+    </Grid>
+</Window>
