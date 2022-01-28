@@ -26,6 +26,7 @@ namespace Yetibyte.Twitch.ChatNx.QueueReceiver.Services
         public event EventHandler<CommandQueueItemReceivedEventArgs> CommandQueueItemReceived;
         public event EventHandler<CommandQueueItemCompletedEventArgs> CommandQueueItemCompleted;
         public event EventHandler<InvalidMessageReceivedEventArgs> InvalidMessageReceived;
+        public event EventHandler ClearRequestReceived;
 
         public CommandQueueWebSocketServer(Func<QueueStatus> queueStatusCallback, int port = DEFAULT_PORT)
         {
@@ -70,6 +71,7 @@ namespace Yetibyte.Twitch.ChatNx.QueueReceiver.Services
                 queueBehavior.CommandQueueItemReceived += QueueBehavior_CommandQueueItemReceived;
                 queueBehavior.InvalidMessageReceived += QueueBehavior_InvalidMessageReceived;
                 queueBehavior.CommandQueueItemCompleted += QueueBehavior_CommandQueueItemCompleted;
+                queueBehavior.ClearRequestReceived += QueueBehavior_ClearRequestReceived;
 
                 _queueBehavior = queueBehavior;
 
@@ -81,7 +83,10 @@ namespace Yetibyte.Twitch.ChatNx.QueueReceiver.Services
             IsRunning = true;
         }
 
-
+        private void QueueBehavior_ClearRequestReceived(object sender, EventArgs e)
+        {
+            OnClearRequestReceived();
+        }
 
         public void Stop()
         {
@@ -90,6 +95,7 @@ namespace Yetibyte.Twitch.ChatNx.QueueReceiver.Services
                 _queueBehavior.CommandQueueItemReceived -= QueueBehavior_CommandQueueItemReceived;
                 _queueBehavior.InvalidMessageReceived -= QueueBehavior_InvalidMessageReceived;
                 _queueBehavior.CommandQueueItemCompleted -= QueueBehavior_CommandQueueItemCompleted;
+                _queueBehavior.ClearRequestReceived -= QueueBehavior_ClearRequestReceived;
             }
 
             _webSocketServer?.Stop();
@@ -121,6 +127,12 @@ namespace Yetibyte.Twitch.ChatNx.QueueReceiver.Services
         {
             var handler = InvalidMessageReceived;
             handler?.Invoke(this, new InvalidMessageReceivedEventArgs(message));
+        }
+
+        protected virtual void OnClearRequestReceived()
+        {
+            var handler = ClearRequestReceived;
+            handler?.Invoke(this, EventArgs.Empty);
         }
     }
 }

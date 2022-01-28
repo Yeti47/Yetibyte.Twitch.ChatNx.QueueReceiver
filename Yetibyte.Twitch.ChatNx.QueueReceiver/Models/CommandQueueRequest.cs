@@ -12,6 +12,7 @@ namespace Yetibyte.Twitch.ChatNx.QueueReceiver.Models
         public const string ACTION_ADD = "ADD";
         public const string ACTION_COMPLETE = "COMPLETE";
         public const string ACTION_CHECK = "CHECK";
+        public const string ACTION_CLEAR = "CLEAR";
 
         public string Action { get; init; }
         public CommandQueueItemData ItemData { get; init; }

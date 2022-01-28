@@ -104,6 +104,7 @@ namespace Yetibyte.Twitch.ChatNx.QueueReceiver.Mvvm.ViewModels
 
             _commandQueueWebSocketServer = commandQueueWebSocketServer ?? throw new ArgumentNullException(nameof(commandQueueWebSocketServer));
             _commandQueueWebSocketServer.CommandQueueItemReceived += commandQueueWebSocketServer_CommandQueueItemReceived;
+            _commandQueueWebSocketServer.ClearRequestReceived += commandQueueWebSocketServer_ClearRequestReceived;
 
             _startCommand = new DelegateCommand(ExecuteStartCommand, CanExecuteStartCommand);
             _stopCommand = new DelegateCommand(ExecuteStopCommand, CanExecuteStopCommand);
@@ -113,6 +114,11 @@ namespace Yetibyte.Twitch.ChatNx.QueueReceiver.Mvvm.ViewModels
 
             _queuedItems.CollectionChanged += queuedItems_CollectionChanged;
             _historyItems.CollectionChanged += historyItems_CollectionChanged;
+        }
+
+        private void commandQueueWebSocketServer_ClearRequestReceived(object sender, EventArgs e)
+        {
+            ExecuteClearCommand(CLEAR_PARAMETER_QUEUE);
         }
 
         private void historyItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

@@ -13,6 +13,7 @@ namespace Yetibyte.Twitch.ChatNx.QueueReceiver.Services
         event EventHandler<CommandQueueItemCompletedEventArgs> CommandQueueItemCompleted;
         event EventHandler<CommandQueueItemReceivedEventArgs> CommandQueueItemReceived;
         event EventHandler<InvalidMessageReceivedEventArgs> InvalidMessageReceived;
+        event EventHandler ClearRequestReceived;
 
         void Start();
         void Stop();

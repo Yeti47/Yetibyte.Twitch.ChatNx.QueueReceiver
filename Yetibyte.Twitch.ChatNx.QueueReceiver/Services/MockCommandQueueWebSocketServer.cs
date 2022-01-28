@@ -19,6 +19,8 @@ namespace Yetibyte.Twitch.ChatNx.QueueReceiver.Services
         public event EventHandler<CommandQueueItemCompletedEventArgs> CommandQueueItemCompleted;
         public event EventHandler<CommandQueueItemReceivedEventArgs> CommandQueueItemReceived;
         public event EventHandler<InvalidMessageReceivedEventArgs> InvalidMessageReceived;
+        public event EventHandler ClearRequestReceived;
+
 
         public MockCommandQueueWebSocketServer()
         {

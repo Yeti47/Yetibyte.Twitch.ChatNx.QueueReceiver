@@ -23,6 +23,7 @@ namespace Yetibyte.Twitch.ChatNx.QueueReceiver.Services
         public event EventHandler<CommandQueueItemReceivedEventArgs> CommandQueueItemReceived;
         public event EventHandler<CommandQueueItemCompletedEventArgs> CommandQueueItemCompleted;
         public event EventHandler<InvalidMessageReceivedEventArgs> InvalidMessageReceived;
+        public event EventHandler ClearRequestReceived;
 
         protected override void OnError(ErrorEventArgs e)
         {
@@ -64,6 +65,10 @@ namespace Yetibyte.Twitch.ChatNx.QueueReceiver.Services
 
                     Send(queueStatusJson);
                 }
+                else if (action.Equals(CommandQueueRequest.ACTION_CLEAR))
+                {
+                    OnClearRequestReceived();
+                }
                 else
                 {
                     OnInvalidMessageReceived(e?.Data);
@@ -92,6 +97,12 @@ namespace Yetibyte.Twitch.ChatNx.QueueReceiver.Services
         {
             var handler = InvalidMessageReceived;
             handler?.Invoke(this, new InvalidMessageReceivedEventArgs(message));
+        }
+
+        protected virtual void OnClearRequestReceived()
+        {
+            var handler = ClearRequestReceived;
+            handler?.Invoke(this, EventArgs.Empty);
         }
     }
 }
